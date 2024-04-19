@@ -63,8 +63,37 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
 
   @Override
   public V set(K key, V value) {
-    return null;        // STUB
+    if (this.root == null) {
+      this.root = new BSTNode<K, V>(key, value);
+    }
+    V oldvalue = set(key, value, this.root);
+    
+    return oldvalue;        
   } // set(K,V)
+
+  public V set(K key, V value, BSTNode<K, V> node) {
+    int compare = comparator.compare(node.key, key);
+    if (compare == 0) {
+      V oldvalue = node.value;
+      node.value = value;
+      return oldvalue;
+    } else if (compare < 0) {
+      if (node.left == null) {
+        node.left = new BSTNode<K, V>(key, value);
+        return value;
+      }
+      V oldvalue = set(key, value, node.left);
+      return oldvalue;
+    } else {
+      if (node.right == null) {
+        node.right = new BSTNode<K, V>(key, value);
+        return value;
+      }
+      V oldvalue = set(key, value, node.right);
+      return oldvalue;
+    }
+
+  }
 
   @Override
   public V get(K key) {
@@ -135,8 +164,18 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
 
   @Override
   public void forEach(BiConsumer<? super K, ? super V> action) {
-    // STUB
+    forEachHelper(this.root, action);
   } // forEach
+
+  public void forEachHelper(BSTNode<K,V> node, BiConsumer<? super K, ? super V> action) {
+    action.accept(node.key, node.value);
+    if (node.left != null) {
+      forEachHelper(node.left, action);
+    }
+    if (node.right != null) {
+      forEachHelper(node.right, action);
+    }
+  }
 
   // +----------------------+----------------------------------------
   // | Other public methods |
@@ -206,8 +245,8 @@ public class SimpleBST<K,V> implements SimpleMap<K,V> {
       @Override
       public BSTNode<K,V> next() {
         checkInit();
-        // STUB
-        return null;
+        BSTNode<K, V> node = stack.pop();
+        return node;
       } // next();
 
       @Override
